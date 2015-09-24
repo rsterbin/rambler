@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/bradfitz/slice"
-	"github.com/elwinar/rambler/driver"
-	_ "github.com/elwinar/rambler/driver/mysql"
-	_ "github.com/elwinar/rambler/driver/postgresql"
+	"github.com/rsterbin/rambler/driver"
+	_ "github.com/rsterbin/rambler/driver/mysql"
+	_ "github.com/rsterbin/rambler/driver/postgresql"
 	"os"
 	"path/filepath"
 )

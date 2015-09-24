@@ -2,8 +2,8 @@ package mysql
 
 import (
 	"database/sql"
-	"github.com/elwinar/rambler/driver"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/rsterbin/rambler/driver"
 )
 
 func init() {

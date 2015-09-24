@@ -3,8 +3,8 @@ package mysql
 import (
 	"database/sql"
 	"fmt"
-	"github.com/elwinar/rambler/driver"
 	_ "github.com/lib/pq"
+	"github.com/rsterbin/rambler/driver"
 )
 
 func init() {
