@@ -13,7 +13,7 @@ func init() {
 
 type Driver struct{}
 
-func (d Driver) New(dsn, schema string) (driver.Conn, error) {
+func (d Driver) New(dsn, dbname, schema string) (driver.Conn, error) {
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		return nil, err
@@ -21,6 +21,7 @@ func (d Driver) New(dsn, schema string) (driver.Conn, error) {
 
 	c := &Conn{
 		db:     db,
+		dbname: dbname,
 		schema: schema,
 	}
 
@@ -29,12 +30,13 @@ func (d Driver) New(dsn, schema string) (driver.Conn, error) {
 
 type Conn struct {
 	db     *sql.DB
+	dbname string
 	schema string
 }
 
 func (c *Conn) HasTable() (bool, error) {
 	var name string
-	err := c.db.QueryRow(fmt.Sprintf(`SELECT table_name FROM information_schema.tables WHERE table_catalog = '%s' AND table_name = 'migrations'`, c.schema)).Scan(&name)
+	err := c.db.QueryRow(fmt.Sprintf(`SELECT table_name FROM information_schema.tables WHERE table_catalog = '%s' AND table_schema = '%s' AND table_name = 'migrations'`, c.dbname, c.schema)).Scan(&name)
 	if err != nil && err != sql.ErrNoRows {
 		return false, err
 	}
@@ -45,12 +47,12 @@ func (c *Conn) HasTable() (bool, error) {
 }
 
 func (c *Conn) CreateTable() error {
-	_, err := c.db.Exec(`CREATE TABLE migrations ( migration VARCHAR(255) NOT NULL );`)
+	_, err := c.db.Exec(fmt.Sprintf(`CREATE TABLE "%s".migrations ( migration VARCHAR(255) NOT NULL );`, c.schema))
 	return err
 }
 
 func (c *Conn) GetApplied() ([]string, error) {
-	rows, err := c.db.Query(`SELECT migration FROM migrations ORDER BY migration ASC`)
+	rows, err := c.db.Query(fmt.Sprintf(`SELECT migration FROM "%s".migrations ORDER BY migration ASC`, c.schema))
 	if err != nil {
 		return nil, err
 	}
@@ -71,12 +73,12 @@ func (c *Conn) GetApplied() ([]string, error) {
 }
 
 func (c *Conn) AddApplied(migration string) error {
-	_, err := c.db.Exec(`INSERT INTO migrations (migration) VALUES ($1)`, migration)
+	_, err := c.db.Exec(fmt.Sprintf(`INSERT INTO "%s".migrations (migration) VALUES ($1)`, c.schema), migration)
 	return err
 }
 
 func (c *Conn) RemoveApplied(migration string) error {
-	_, err := c.db.Exec(`DELETE FROM migrations WHERE migration = $1`, migration)
+	_, err := c.db.Exec(fmt.Sprintf(`DELETE FROM "%s".migrations WHERE migration = $1`, c.schema), migration)
 	return err
 }
 

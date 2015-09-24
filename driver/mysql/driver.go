@@ -12,7 +12,7 @@ func init() {
 
 type Driver struct{}
 
-func (d Driver) New(dsn, schema string) (driver.Conn, error) {
+func (d Driver) New(dsn, dbname, schema string) (driver.Conn, error) {
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
 		return nil, err
@@ -20,18 +20,18 @@ func (d Driver) New(dsn, schema string) (driver.Conn, error) {
 
 	return Conn{
 		db:     db,
-		schema: schema,
+		dbname: dbname,
 	}, nil
 }
 
 type Conn struct {
 	db     *sql.DB
-	schema string
+	dbname string
 }
 
 func (c Conn) HasTable() (bool, error) {
 	var table string
-	err := c.db.QueryRow(`select table_name from information_schema.tables where table_schema = ? and table_name = ?`, c.schema, "migrations").Scan(&table)
+	err := c.db.QueryRow(`select table_name from information_schema.tables where table_schema = ? and table_name = ?`, c.dbname, "migrations").Scan(&table)
 	if err != nil && err != sql.ErrNoRows {
 		return false, err
 	}
