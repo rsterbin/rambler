@@ -5,6 +5,7 @@ import (
 	"fmt"
 	_ "github.com/lib/pq"
 	"github.com/rsterbin/rambler/driver"
+	"strings"
 )
 
 func init() {
@@ -17,6 +18,15 @@ func (d Driver) New(dsn, dbname, schema string) (driver.Conn, error) {
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		return nil, err
+	}
+
+	if strings.TrimSpace(schema) != "" {
+		_, err := db.Exec(fmt.Sprintf(`SET search_path="%s";`, schema))
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		schema = "public"
 	}
 
 	c := &Conn{
