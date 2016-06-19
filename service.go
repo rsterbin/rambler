@@ -3,10 +3,14 @@ package main
 import (
 	"errors"
 	"fmt"
+	"os"
+	"path/filepath"
+
 	"github.com/bradfitz/slice"
 	"github.com/rsterbin/rambler/driver"
 	_ "github.com/rsterbin/rambler/driver/mysql"
 	_ "github.com/rsterbin/rambler/driver/postgresql"
+	_ "github.com/rsterbin/rambler/driver/sqlite"
 	"os"
 	"path/filepath"
 )

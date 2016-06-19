@@ -10,6 +10,7 @@ import (
 var app *cli.App
 var service *Service
 
+// VERSION holds the version of rambler as defined at compile time by GoXC.
 var VERSION string
 
 func init() {
@@ -68,5 +69,6 @@ func main() {
 	err := app.Run(os.Args)
 	if err != nil {
 		log.Println(err)
+		os.Exit(1)
 	}
 }
