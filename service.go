@@ -11,8 +11,6 @@ import (
 	_ "github.com/rsterbin/rambler/driver/mysql"
 	_ "github.com/rsterbin/rambler/driver/postgresql"
 	_ "github.com/rsterbin/rambler/driver/sqlite"
-	"os"
-	"path/filepath"
 )
 
 var (
